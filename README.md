@@ -8,6 +8,9 @@ pinned: false
 ---
 # Email Reply Suggestion System
 
+**Live Demo:** [https://huggingface.co/spaces/pradeeshsivaprakasam/Email-Reply-Suggestion-System](https://huggingface.co/spaces/pradeeshsivaprakasam/Email-Reply-Suggestion-System)
+
+
 An AI email assistant that drafts suggested replies using retrieval-augmented generation (RAG) via the Groq API, and **scores its own suggestions** on multiple axes with written rationale — so a reviewer knows not just "here's a draft" but "here's how good this draft is and why."
 
 > **Key differentiator:** The evaluation system is the core deliverable. It's a tiered, multi-axis scoring pipeline with calibration validation — not a single fuzzy similarity number.
