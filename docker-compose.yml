@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "7860:7860"
+    environment:
+      # Pass the API key to the container
+      - GROQ_API_KEY=${GROQ_API_KEY}
+    volumes:
+      # Mount the data directory to persist the SQLite database and JSONL files locally
+      - ./backend/data:/app/backend/data

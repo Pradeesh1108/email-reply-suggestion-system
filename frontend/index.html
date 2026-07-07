@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI Email Reply Suggestion System with multi-axis evaluation and quality scoring">
+    <title>Email Reply Assistant — AI-Powered Suggestions</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">✉</div>
+                    <div>
+                        <h1>Email Reply Assistant</h1>
+                        <p class="subtitle">AI-powered replies with transparent quality scoring</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Input Section -->
+            <section class="input-section">
+                <div class="section-header">
+                    <h2>Incoming Email</h2>
+                    <span class="badge badge-info">Paste or type the email you want to reply to</span>
+                </div>
+                <textarea
+                    id="emailInput"
+                    class="email-textarea"
+                    placeholder="Subject: Your order #12345&#10;&#10;Hi,&#10;&#10;I placed an order last week and haven't received a shipping confirmation yet. Can you check on the status?&#10;&#10;Thanks,&#10;John"
+                    rows="8"
+                ></textarea>
+                <div class="input-actions">
+                    <button class="btn btn-primary" id="suggestBtn" onclick="generateSuggestion()">
+                        <span class="btn-icon">⚡</span>
+                        Generate Suggested Reply
+                    </button>
+                    <button class="btn btn-secondary" onclick="loadSampleEmail()">
+                        Load Sample
+                    </button>
+                </div>
+            </section>
+
+            <!-- Loading Spinner -->
+            <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+                <div class="spinner"></div>
+                <p>Generating reply and evaluating quality...</p>
+                <p class="loading-detail">This involves retrieval + 1 LLM call for generation + 1 for evaluation</p>
+            </div>
+
+            <!-- Results Section -->
+            <div id="resultsSection" style="display: none;">
+                <!-- Generated Reply -->
+                <section class="result-section">
+                    <div class="section-header">
+                        <h2>💬 Suggested Reply</h2>
+                        <button class="btn btn-ghost btn-sm" onclick="copyReply()">📋 Copy</button>
+                    </div>
+                    <div class="reply-card" id="replyCard">
+                        <pre class="reply-text" id="replyText"></pre>
+                    </div>
+                </section>
+
+                <!-- Retrieval Info (collapsible) -->
+                <section class="result-section">
+                    <details class="collapsible">
+                        <summary class="section-header clickable">
+                            <h2>🔍 Grounded On These Past Examples</h2>
+                            <span class="badge" id="confidenceBadge">Loading...</span>
+                        </summary>
+                        <div class="examples-list" id="examplesList"></div>
+                    </details>
+                </section>
+
+                <!-- Evaluation Score Card -->
+                <section class="result-section">
+                    <div class="section-header">
+                        <h2>📊 Quality Evaluation</h2>
+                        <div class="composite-score" id="compositeScore">—</div>
+                    </div>
+
+                    <!-- Short-circuit notice -->
+                    <div class="alert alert-warning" id="shortCircuitAlert" style="display: none;">
+                        ⚠️ Hard rule failure detected — LLM judge was skipped to save cost.
+                    </div>
+
+                    <!-- Low confidence notice -->
+                    <div class="alert alert-info" id="lowConfidenceAlert" style="display: none;">
+                        ℹ️ Low retrieval confidence — the suggestion is grounded in weak matches.
+                    </div>
+
+                    <!-- Rule Checks -->
+                    <div class="eval-subsection">
+                        <h3>Rule-Based Checks</h3>
+                        <div id="ruleChecks" class="rule-checks-grid"></div>
+                    </div>
+
+                    <!-- Axis Scores -->
+                    <div class="eval-subsection" id="axisScoresSection">
+                        <h3>LLM Judge Scores (4 axes, 1-5 scale)</h3>
+                        <div id="axisScores" class="axis-scores-grid"></div>
+                        <div class="overall-rationale" id="overallRationale"></div>
+                    </div>
+
+                    <!-- Flags -->
+                    <div class="eval-subsection" id="flagsSection" style="display: none;">
+                        <h3>⚠️ Flags</h3>
+                        <div id="flagsList" class="flags-list"></div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- History Section -->
+            <section class="history-section" id="historySection">
+                <h2>📜 Recent Suggestions</h2>
+                <div id="historyList" class="history-list">
+                    <p class="text-muted">No suggestions yet.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
