@@ -1,11 +1,4 @@
----
-title: Email Reply Suggestion System
-emoji: 📧
-colorFrom: blue
-colorTo: indigo
-sdk: docker
-pinned: false
----
+
 # Email Reply Suggestion System
 
 **Live Demo:** [https://huggingface.co/spaces/pradeeshsivaprakasam/Email-Reply-Suggestion-System](https://huggingface.co/spaces/pradeeshsivaprakasam/Email-Reply-Suggestion-System)
