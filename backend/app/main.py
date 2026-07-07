@@ -40,31 +40,66 @@ _grounding: list[EmailRecord] = []
 _holdout: list[EmailRecord] = []
 
 
+def _init_services():
+    global _retriever, _generator, _evaluator, _judge
+    global _records, _grounding, _holdout
+
+    if _retriever is not None:
+        return
+
+    setup_logging()
+    settings = get_settings()
+
+    logger.info("Loading dataset from %s", settings.dataset_path)
+    _records = load_dataset(settings.dataset_path)
+    logger.info("Loaded %d email/reply records", len(_records))
+
+    _grounding, _holdout = split_dataset(_records)
+    logger.info("Split: %d grounding, %d holdout", len(_grounding), len(_holdout))
+
+    _retriever = TfidfRetriever()
+    _retriever.fit(_grounding)
+
+    cache = ResponseCache(settings.cache_db_path)
+    groq_client = GroqClient(cache=cache)
+
+    _generator = GroqGenerator(groq_client=groq_client, cache=cache)
+    _judge = LLMJudge(groq_client=groq_client)
+    _evaluator = PipelineEvaluator(judge=_judge)
+    logger.info("All services initialized — ready to serve")
+
+
 def get_retriever() -> TfidfRetriever:
+    _init_services()
     assert _retriever is not None, "App not started — retriever not initialized"
     return _retriever
 
 
 def get_generator() -> GroqGenerator:
+    _init_services()
     assert _generator is not None, "App not started — generator not initialized"
     return _generator
 
 
 def get_evaluator() -> PipelineEvaluator:
+    _init_services()
     assert _evaluator is not None, "App not started — evaluator not initialized"
     return _evaluator
 
 
 def get_judge() -> LLMJudge:
+    _init_services()
     assert _judge is not None, "App not started — judge not initialized"
     return _judge
 
 
 def get_dataset_records() -> list[EmailRecord]:
+    _init_services()
     return _records
 
 
 def get_split() -> tuple[list[EmailRecord], list[EmailRecord]]:
+    _init_services()
     return _grounding, _holdout
 
 
@@ -78,37 +113,7 @@ logger = get_logger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Initialize services at startup, clean up at shutdown."""
-    global _retriever, _generator, _evaluator, _judge
-    global _records, _grounding, _holdout
-
-    setup_logging()
-    settings = get_settings()
-
-    # ── Load dataset ──────────────────────────────────────────────────────
-    logger.info("Loading dataset from %s", settings.dataset_path)
-    _records = load_dataset(settings.dataset_path)
-    logger.info("Loaded %d email/reply records", len(_records))
-
-    # ── Split ─────────────────────────────────────────────────────────────
-    _grounding, _holdout = split_dataset(_records)
-    logger.info("Split: %d grounding, %d holdout", len(_grounding), len(_holdout))
-
-    # ── Build retrieval index (once at startup — cost-control §6) ─────────
-    _retriever = TfidfRetriever()
-    _retriever.fit(_grounding)
-
-    # ── Initialize Groq client with cache ─────────────────────────────────
-    cache = ResponseCache(settings.cache_db_path)
-    groq_client = GroqClient(cache=cache)
-
-    # ── Initialize generator ──────────────────────────────────────────────
-    _generator = GroqGenerator(groq_client=groq_client, cache=cache)
-
-    # ── Initialize evaluator ──────────────────────────────────────────────
-    _judge = LLMJudge(groq_client=groq_client)
-    _evaluator = PipelineEvaluator(judge=_judge)
-
-    logger.info("All services initialized — ready to serve")
+    _init_services()
     yield
     logger.info("Shutting down")
 
