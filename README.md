@@ -1,3 +1,11 @@
+---
+title: Email Reply Suggestion System
+emoji: 📧
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+pinned: false
+---
 # Email Reply Suggestion System
 
 An AI email assistant that drafts suggested replies using retrieval-augmented generation (RAG) via the Groq API, and **scores its own suggestions** on multiple axes with written rationale — so a reviewer knows not just "here's a draft" but "here's how good this draft is and why."
