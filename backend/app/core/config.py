@@ -11,6 +11,7 @@ swap in `openai/gpt-oss-20b` for cheaper runs without code changes.
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -53,8 +54,8 @@ class Settings(BaseSettings):
     stability_reruns: int = 3
 
     # ── Database ──────────────────────────────────────────────────────────
-    database_url: str = f"sqlite:///{_PROJECT_ROOT / 'backend' / 'data' / 'history.db'}"
-    cache_db_path: str = str(_PROJECT_ROOT / "backend" / "data" / "cache.db")
+    database_url: str = f"sqlite:///{'/tmp' if os.environ.get('VERCEL') else _PROJECT_ROOT / 'backend' / 'data'}/history.db"
+    cache_db_path: str = f"{'/tmp' if os.environ.get('VERCEL') else _PROJECT_ROOT / 'backend' / 'data'}/cache.db"
 
     # ── Paths ─────────────────────────────────────────────────────────────
     @property
